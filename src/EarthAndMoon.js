@@ -18,20 +18,11 @@ const renderer = new THREE.WebGLRenderer({
 
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
-camera.position.set(0, 0, 100);
+camera.position.set(0, 100, 200);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 const spaceTexture = new THREE.TextureLoader().load("../images/space.png");
 scene.background = spaceTexture;
-
-
-const pointLight = new THREE.PointLight(
-    "white",
-    1,
-    100
-);
-pointLight.position.set(20, 20, 20);
-scene.add(pointLight);
 
 const ambientLight = new THREE.AmbientLight(
     "white",
@@ -63,6 +54,10 @@ const moon = new THREE.Mesh(
         normalMap : new THREE.TextureLoader().load('../images/moon-normal.jpg'),
     })
 );
+moon.rotateOnAxis(
+    new THREE.Vector3(0, 0, 1), 
+    0.16
+)
 moon.position.set(0,0,70);
 earth.add(moon);
 
@@ -93,12 +88,19 @@ for(let i=0;i<200;i++)
 
 // Animate fuction
 
+var theta = 0;
+var dTheta = 2 * Math.PI / 1000;
+var r = 70;
+
 function animate() {
-    requestAnimationFrame(animate);
-    renderer.render(scene, camera);
+    theta += dTheta;
+    moon.position.x = r * Math.cos(theta);
+    moon.position.z = r * Math.sin(theta);
     controls.update();
-    moon.rotateY(0);
+    moon.rotateY(-0.01);
     earth.rotateY(0.01);
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
 }
 
 animate();
