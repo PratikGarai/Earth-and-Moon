@@ -37,7 +37,7 @@ const earth = new THREE.Mesh(
     new THREE.SphereGeometry(30, 64, 64), 
     new THREE.MeshStandardMaterial({
         map : new THREE.TextureLoader().load('../images/earth-spherical.jpg'),
-        normalMap : new THREE.TextureLoader().load('../images/earth-normal.jpg'),
+        normalMap : new THREE.TextureLoader().load('../images/earth-normal.png'),
     })
 );
 earth.position.set(0,0,0);
@@ -47,6 +47,7 @@ earth.rotateOnAxis(
 )
 scene.add(earth);
 
+const r = 70;
 const moon = new THREE.Mesh(
     new THREE.SphereGeometry(5, 32, 32), 
     new THREE.MeshStandardMaterial({
@@ -54,11 +55,7 @@ const moon = new THREE.Mesh(
         normalMap : new THREE.TextureLoader().load('../images/moon-normal.jpg'),
     })
 );
-moon.rotateOnAxis(
-    new THREE.Vector3(0, 0, 1), 
-    0.16
-)
-moon.position.set(0,0,70);
+moon.position.set(0,0,r);
 earth.add(moon);
 
 
@@ -88,17 +85,16 @@ for(let i=0;i<200;i++)
 
 // Animate fuction
 
-var theta = 0;
-var dTheta = 2 * Math.PI / 1000;
-var r = 70;
+let theta = 0;
+let dTheta = 2 * Math.PI / 500;
 
 function animate() {
     theta += dTheta;
     moon.position.x = r * Math.cos(theta);
     moon.position.z = r * Math.sin(theta);
     controls.update();
-    moon.rotateY(-0.01);
-    earth.rotateY(0.01);
+    moon.rotateY(-0.02);
+    earth.rotateY(0.02);
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
 }
