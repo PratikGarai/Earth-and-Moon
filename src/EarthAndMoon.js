@@ -2,6 +2,9 @@ import "./style.css";
 import * as THREE from "three";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 
+
+// ============== SETUP
+
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
     75, 
@@ -15,25 +18,16 @@ const renderer = new THREE.WebGLRenderer({
 
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
-camera.position.setZ(30);
+camera.position.set(0, 0, 100);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 const spaceTexture = new THREE.TextureLoader().load("../images/space.png");
 scene.background = spaceTexture;
 
 
-// Custom code begins here
-
-const geometry = new THREE.TorusGeometry(8, 3, 30, 30);
-const material = new THREE.MeshStandardMaterial({
-    color : "red",
-});
-const torus = new THREE.Mesh(geometry, material);
-scene.add(torus);
-
 const pointLight = new THREE.PointLight(
     "white",
-    10,
+    1,
     100
 );
 pointLight.position.set(20, 20, 20);
@@ -45,10 +39,36 @@ const ambientLight = new THREE.AmbientLight(
 );
 scene.add(ambientLight);
 
-const lighthelper = new THREE.PointLightHelper(pointLight);
-scene.add(lighthelper);
-const gridhelper = new THREE.GridHelper(200, 50);
-scene.add(gridhelper);
+
+// ============== MAIN STUFF
+
+const earth = new THREE.Mesh(
+    new THREE.SphereGeometry(30, 64, 64), 
+    new THREE.MeshStandardMaterial({
+        map : new THREE.TextureLoader().load('../images/earth-spherical.jpg'),
+        normalMap : new THREE.TextureLoader().load('../images/earth-normal.jpg'),
+    })
+);
+earth.position.set(0,0,0);
+earth.rotateOnAxis(
+    new THREE.Vector3(0, 0, 1), 
+    0.16
+)
+scene.add(earth);
+
+const moon = new THREE.Mesh(
+    new THREE.SphereGeometry(5, 32, 32), 
+    new THREE.MeshStandardMaterial({
+        map : new THREE.TextureLoader().load('../images/moon-spherical.jpg'),
+        normalMap : new THREE.TextureLoader().load('../images/moon-normal.jpg'),
+    })
+);
+moon.position.set(0,0,70);
+earth.add(moon);
+
+
+
+// ============== STARS
 
 const addStar = () => {
     const geometry = new THREE.SphereGeometry(0.25, 24, 24);
@@ -59,7 +79,7 @@ const addStar = () => {
 
     const arr = [];
     for(let i=0;i<3;i++)
-        arr.push(THREE.MathUtils.randFloatSpread(100));
+        arr.push(THREE.MathUtils.randFloatSpread(400));
     const [x,y,z] = arr;
     star.position.set(x,y,z);
     scene.add(star);
@@ -75,10 +95,10 @@ for(let i=0;i<200;i++)
 
 function animate() {
     requestAnimationFrame(animate);
-    torus.rotation.x += 0.01;
-    torus.rotation.y += 0.01;
     renderer.render(scene, camera);
     controls.update();
+    moon.rotateY(0);
+    earth.rotateY(0.01);
 }
 
 animate();
